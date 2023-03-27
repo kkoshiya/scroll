@@ -19,14 +19,14 @@ const LeaderBoard = (props) => {
         console.log(playerCount);
 
         let uni = [];
-        // for (var i = 1; i < playerCount; i++) {
-        //     console.log(i)
-        //     let ad = await props.contract.owner(i);
-        //     if (!uni.includes(ad)) {
-        //         uni.push(ad)
-        //     }
-        //     console.log('uniqu players ', uni.length);
-        // }
+        for (var i = 1; i < playerCount; i++) {
+            console.log(i)
+            let ad = await props.contract.owner(i);
+            if (!uni.includes(ad)) {
+                uni.push(ad)
+            }
+            console.log('uniqu players ', uni.length);
+        }
         const date = new Date();
         let day = date.getDate();
         let month = date.getMonth() + 1;
