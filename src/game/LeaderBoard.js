@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Box, CircularProgress } from '@mui/material';
 import './LeaderBoard.css';
 import EnhancedTable from "../components/PlayerTable";
-import cache from "./scores.json"
+import cache from "./scores.json";
+import { saveAs } from 'file-saver';
+//var FileSaver = require('file-saver');
+import scores from './scoreData/export.json';
 
 
 const LeaderBoard = (props) => {
@@ -11,22 +14,28 @@ const LeaderBoard = (props) => {
     const [loading, setLoading] = useState(false);
 
     const getPlayers = async() => {
-        console.log('hello from leaderboard')
-        // setPlayers(cache.cache);
+        console.log('count' + scores.length)
+        setPlayers(scores);
 
-        const tmp = await props.contract.playerCount();
-        const playerCount = tmp.toNumber();
-        console.log(playerCount);
+        // const tmp = await props.contract.playerCount();
+        // const playerCount = tmp.toNumber();
+        // console.log(playerCount);
 
-        let uni = [];
-        for (var i = 1; i < playerCount; i++) {
-            console.log(i)
-            let ad = await props.contract.owner(i);
-            if (!uni.includes(ad)) {
-                uni.push(ad)
-            }
-            console.log('uniqu players ', uni.length);
-        }
+        // let uni = [];
+        // for (var i = 1; i < playerCount; i++) {
+        //     console.log(i)
+        //     try {
+        //         let ad = await props.contract.owner(i);
+        //         if (!uni.includes(ad)) {
+        //             uni.push(ad)
+        //         }
+        //         console.log('uniqu players ', uni.length);
+        //     } catch {
+        //         console.log('failed')
+        //         i--;
+        //         continue;  
+        //     }
+        // }
         const date = new Date();
         let day = date.getDate();
         let month = date.getMonth() + 1;
@@ -35,36 +44,46 @@ const LeaderBoard = (props) => {
         const storedDate = JSON.parse(localStorage.getItem('date'));
         //const log = JSON.parse(localStorage.getItem('playerArray'));
         //console.log(log.cache)
-        if ( storedDate.reset == false) {
+        if (storedDate.reset == false) {
         //if (storedDate.date !== currentDate || storedDate.reset == false) {
             console.log('cache boutta hit')
-            setLoading(true);
+            //setLoading(true);
             const tmp = await props.contract.playerCount();
             const playerCount = tmp.toNumber();
             let hold = []
             console.log(playerCount);
-            for(var i = 1; i < playerCount; i++){
+            for(var i = 0; i <= 150000; i++){
                 console.log('saving to chache', i)
-                const response = await props.contract.players(i);
-                const uri = await props.contract.uri(i);
-                let body = {
-                    id: i,
-                    attack: response.attack.toNumber(),
-                    hp: response.hp.toNumber(),
-                    status: response.status,
-                    wins: response.wins.toNumber(),
-                    image: uri
-                };
-                hold.push(body);
+                try {
+                    const response = await props.contract.players(i);
+                    const uri = await props.contract.uri(i);
+                    let body = {
+                        id: i,
+                        attack: response.attack.toNumber(),
+                        hp: response.hp.toNumber(),
+                        status: response.status,
+                        wins: response.wins.toNumber(),
+                        image: uri
+                    };
+                    hold.push(body);
+                } catch {
+                    console.log('failed')
+                    i--;
+                    continue;
+                }
             };
             let sorted = hold.sort(
                 (a,b) => (b.wins - a.wins)
             );
-            localStorage.setItem('playerArray', JSON.stringify({
-                cache: sorted
-            }))
+            let plug = {}.scores = sorted;
+            console.log(plug)
+            var blob = new Blob([JSON.stringify(plug)], {type: 'application/json'});
+            saveAs(blob, 'export.json');
+            // localStorage.setItem('playerArrayC', JSON.stringify({
+            //     cache: hold
+            // }))
     
-            setPlayers(sorted);
+            //setPlayers(sorted);
             setLoading(false);
             localStorage.setItem('date', JSON.stringify({
                 date: currentDate,
@@ -73,8 +92,8 @@ const LeaderBoard = (props) => {
         } else {
             //const storedPlayers = JSON.parse(localStorage.getItem('playerArray'));
             //console.log(cache.cache)
-            setPlayers(cache.cache);
-            console.log(players)
+            //setPlayers(cache.cache);
+            //console.log(players)
         }
     }
 
