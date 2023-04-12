@@ -5,7 +5,7 @@ import EnhancedTable from "../components/PlayerTable";
 import cache from "./scores.json";
 import { saveAs } from 'file-saver';
 //var FileSaver = require('file-saver');
-import scores from './scoreData/export.json';
+import scores from './scoreData/export7.json';
 
 
 const LeaderBoard = (props) => {
@@ -52,7 +52,7 @@ const LeaderBoard = (props) => {
             const playerCount = tmp.toNumber();
             let hold = []
             console.log(playerCount);
-            for(var i = 0; i <= 150000; i++){
+            for(var i = 0; i <= 200000; i++){
                 console.log('saving to chache', i)
                 try {
                     const response = await props.contract.players(i);
